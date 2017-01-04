@@ -10,10 +10,7 @@ import {TicTacToe} from './ttt/ttt.component';
 @NgModule({
     imports: [BrowserModule],
     declarations: [AppComponent,
-        XorComponent,
-        WorldComponent,
-         TicTacToe
-
+        TicTacToe
     ],
     bootstrap: [AppComponent]
 })
