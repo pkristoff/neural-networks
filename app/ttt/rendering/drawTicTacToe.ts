@@ -1,6 +1,6 @@
 import {TicTacToeCell} from './tic-tac-toe-cell';
-import {PlayerTicTacToe} from './playerTicTacToe';
-import {BoardTicTacToe} from './boardTicTacToe';
+import {PlayerTicTacToe} from '../player/playerTicTacToe';
+import {BoardTicTacToe} from '../boardTicTacToe';
 
 export class DrawTicTacToe {
     context: any;
@@ -26,7 +26,7 @@ export class DrawTicTacToe {
             6: new TicTacToeCell(rootX, rootY, 0, (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT, context),
             7: new TicTacToeCell(rootX, rootY, this.CELL_WIDTH, (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT, context),
             8: new TicTacToeCell(rootX, rootY, (this.CELL_WIDTH * 2), (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT, context)
-        }
+        };
     }
 
 
@@ -69,7 +69,6 @@ export class DrawTicTacToe {
 
     drawWinningLine(player: PlayerTicTacToe, winningCells: any) {
 
-        let ctx = this.context;
         let self = this;
         if (self.boardTicTacToe.isAcross(winningCells)) {
             winningCells.forEach(function (cell) {
@@ -79,7 +78,7 @@ export class DrawTicTacToe {
             if (self.boardTicTacToe.isDown(winningCells)) {
                 winningCells.forEach(function (cell) {
                     self.cells[cell].drawDown(player);
-                })
+                });
             } else {
                 if (self.boardTicTacToe.isDiagonal(winningCells)) {
                     winningCells.forEach(function (cell) {
@@ -88,7 +87,7 @@ export class DrawTicTacToe {
                         } else {
                             self.cells[cell].drawDiagonalUp(player);
                         }
-                    })
+                    });
                 } else {
                     // console.log('drawWinningLine: draw')
                 }

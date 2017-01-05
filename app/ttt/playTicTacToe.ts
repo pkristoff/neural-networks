@@ -1,8 +1,7 @@
-
 import {BoardTicTacToe} from './boardTicTacToe';
-import {PlayerTicTacToe} from './playerTicTacToe';
+import {PlayerTicTacToe} from './player/playerTicTacToe';
 
-export class PlayTicTacToe{
+export class PlayTicTacToe {
     player1: PlayerTicTacToe;
     player2: PlayerTicTacToe;
     board: BoardTicTacToe;
@@ -14,7 +13,7 @@ export class PlayTicTacToe{
         this.board = new BoardTicTacToe(player1, player2);
     }
 
-    play(){
+    play() {
         this.player1.takeTurn();
     }
 

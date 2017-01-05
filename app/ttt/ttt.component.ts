@@ -4,9 +4,8 @@ import {Component} from '@angular/core';
 declare let module: any;
 declare let Phaser: any;
 
-import {DrawTicTacToe} from "./drawTicTacToe";
-import {PlayTicTacToe} from "./playTicTacToe";
-import {PlayerTicTacToe} from "./playerTicTacToe";
+import {PlayTicTacToe} from './playTicTacToe';
+import {PlayerTicTacToe} from './player/playerTicTacToe';
 
 @Component({
     moduleId: module.id,

@@ -6,10 +6,14 @@
  */
 declare let synaptic: any;
 declare let pica: any;
-declare let PIXI: any;
 declare let Phaser: any;
 
 export class NN {
+
+    inputLayer: any;
+    hiddenLayer: any;
+    outputLayer: any;
+    network: any;
 
     /**
      * Default constructor
@@ -24,21 +28,15 @@ export class NN {
         this.hiddenLayer.project(this.outputLayer);
 
         this.network = new synaptic.Network({
-            input: this.inputLayer,
+            input:  this.inputLayer,
             hidden: [this.hiddenLayer],
             output: this.outputLayer
         });
     }
 
-    inputLayer: any;
-    hiddenLayer: any;
-    outputLayer: any;
-    network: any;
-
     /**
      * Classify
      * @param  {Array} inputs to classify
-     * @return {float}
      */
     classify(inputs) {
         return this.network.activate(inputs);
@@ -167,7 +165,7 @@ let playState = {
 
         // output bitmapdata
         this.outputBitmapData = this.game.make.bitmapData(150, 150);
-        //this.outputBitmapData.addToWorld(); // show output
+        // this.outputBitmapData.addToWorld(); // show output
 
         // create our background
         this.createBackground();
@@ -200,10 +198,10 @@ let playState = {
      */
         setupOutputCanvas(settings) {
         // create output canvas
-        this.outputCanvasElem = document.createElement("canvas");
-        this.outputCanvasElem.setAttribute("id", "output-canvas");
-        this.outputCanvasElem.setAttribute("width", settings.neuralnetwork.input);
-        this.outputCanvasElem.setAttribute("height", settings.neuralnetwork.input);
+        this.outputCanvasElem = document.createElement('canvas');
+        this.outputCanvasElem.setAttribute('id', 'output-canvas');
+        this.outputCanvasElem.setAttribute('width', settings.neuralnetwork.input);
+        this.outputCanvasElem.setAttribute('height', settings.neuralnetwork.input);
 
         // append output canvas
         document.body.appendChild(this.outputCanvasElem);
@@ -285,8 +283,10 @@ let playState = {
 
         // remove any animations
         for (let tileName in this.tweens) {
-            this.tweens[tileName].stop();
-            this.tiles[tileName].alpha = 1;
+            if (this.tweens.hasOwnProperty(tileName)) {
+                this.tweens[tileName].stop();
+                this.tiles[tileName].alpha = 1;
+            }
         }
 
         // reset textures
@@ -299,7 +299,9 @@ let playState = {
 
         // reset any previous classification
         for (let tileName in this.tiles) {
-            this.tiles[tileName].classification = null;
+            if (this.tiles.hasOwnProperty(tileName)) {
+                this.tiles[tileName].classification = null;
+            }
         }
     },
 
@@ -339,7 +341,7 @@ let playState = {
                 this.classifyActiveTile().then(function (result) {
 
                     // store result in tile object
-                    let classification = result[0] > result[1] ? "o" : "x";
+                    let classification = result[0] > result[1] ? 'o' : 'x';
                     this.tiles[sprite.name].classification = classification;
 
                     // update tile texture that represent classification
@@ -358,7 +360,7 @@ let playState = {
                         for (let tileName in winnerInfo.winnerTiles) {
                             if (this.tilesBitmapData.hasOwnProperty(tileName)) {
                                 // animate winning tiles
-                                this.tweens[tileName] = this.game.add.tween(this.tiles[tileName]).to({alpha: [0, 1]}, 900, "Linear", true);
+                                this.tweens[tileName] = this.game.add.tween(this.tiles[tileName]).to({alpha: [0, 1]}, 900, 'Linear', true);
                                 this.tweens[tileName].repeat(500, 200);
                             }
                         }
@@ -518,6 +520,7 @@ let playState = {
  *
  */
 export class PhaserANNGame {
+    game: any;
 
     /**
      * Constructor
@@ -538,7 +541,5 @@ export class PhaserANNGame {
         // 'boot' our game
         this.game.state.start('boot');
     }
-
-    game: any
 
 }

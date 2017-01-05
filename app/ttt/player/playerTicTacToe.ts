@@ -1,5 +1,5 @@
 import { Injectable } from '@angular/core';
-import {BoardTicTacToe} from './boardTicTacToe'
+import {BoardTicTacToe} from '../boardTicTacToe';
 
 @Injectable()
 export class PlayerTicTacToe {

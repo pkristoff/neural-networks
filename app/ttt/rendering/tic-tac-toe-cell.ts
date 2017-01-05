@@ -1,4 +1,4 @@
-import {PlayerTicTacToe} from './playerTicTacToe';
+import {PlayerTicTacToe} from '../player/playerTicTacToe';
 
 export class TicTacToeCell {
     rootX: number;
@@ -65,7 +65,7 @@ export class TicTacToeCell {
 
     }
 
-    drawO(){
+    drawO() {
         let absoluteX = this.absoluteX();
         let absoluteY = this.absoluteY();
         let offset = 5;
@@ -79,24 +79,27 @@ export class TicTacToeCell {
         this.context.arc(cellCenterX, cellCenterY, radius, this.PI_2, false);
         this.context.stroke();
     }
+
     // drawing winning line across a row
-    drawAcross(player: PlayerTicTacToe){
+    drawAcross(player: PlayerTicTacToe) {
         this.drawTokenForPlayer(player);
 
     }
 
     // drawing winning line down a column
-    drawDown(player: PlayerTicTacToe){
+    drawDown(player: PlayerTicTacToe) {
         this.drawTokenForPlayer(player);
 
     }
+
     // drawing winning line diagonally
-    drawDiagonalUp(player: PlayerTicTacToe){
+    drawDiagonalUp(player: PlayerTicTacToe) {
         this.drawTokenForPlayer(player);
 
     }
+
     // drawing winning line diagonally
-    drawDiagonalDown(player: PlayerTicTacToe){
+    drawDiagonalDown(player: PlayerTicTacToe) {
         this.drawTokenForPlayer(player);
 
     }
