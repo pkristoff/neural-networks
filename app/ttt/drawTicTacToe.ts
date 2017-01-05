@@ -1,30 +1,31 @@
-import {TicTacToeCell} from './tic-tac-toe';
+import {TicTacToeCell} from './tic-tac-toe-cell';
+import {PlayerTicTacToe} from './playerTicTacToe';
+import {BoardTicTacToe} from './boardTicTacToe';
 
 export class DrawTicTacToe {
     context: any;
     rootX: number;
     rootY: number;
     cells: any;
+    boardTicTacToe: BoardTicTacToe;
 
-    CELL_OFFSET: number = 5;
     CELL_WIDTH: number = 20;
     CELL_HEIGHT: number = 20;
-    PI_2: number = 2 * Math.PI;
 
     constructor(context: any, rootX: number, rootY: number) {
         this.context = context;
         this.rootX = rootX;
         this.rootY = rootY;
         this.cells = {
-            0: new TicTacToeCell(rootX, rootY, 0, 0, this.CELL_WIDTH, this.CELL_HEIGHT),
-            1: new TicTacToeCell(rootX, rootY, this.CELL_WIDTH, 0, this.CELL_WIDTH, this.CELL_HEIGHT),
-            2: new TicTacToeCell(rootX, rootY, (this.CELL_WIDTH * 2), 0, this.CELL_WIDTH, this.CELL_HEIGHT),
-            3: new TicTacToeCell(rootX, rootY, 0, this.CELL_HEIGHT, this.CELL_WIDTH, this.CELL_HEIGHT),
-            4: new TicTacToeCell(rootX, rootY, this.CELL_WIDTH, this.CELL_HEIGHT, this.CELL_WIDTH, this.CELL_HEIGHT),
-            5: new TicTacToeCell(rootX, rootY, (this.CELL_WIDTH * 2), this.CELL_HEIGHT, this.CELL_WIDTH, this.CELL_HEIGHT),
-            6: new TicTacToeCell(rootX, rootY, 0, (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT),
-            7: new TicTacToeCell(rootX, rootY, this.CELL_WIDTH, (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT),
-            8: new TicTacToeCell(rootX, rootY, (this.CELL_WIDTH * 2), (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT)
+            0: new TicTacToeCell(rootX, rootY, 0, 0, this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            1: new TicTacToeCell(rootX, rootY, this.CELL_WIDTH, 0, this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            2: new TicTacToeCell(rootX, rootY, (this.CELL_WIDTH * 2), 0, this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            3: new TicTacToeCell(rootX, rootY, 0, this.CELL_HEIGHT, this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            4: new TicTacToeCell(rootX, rootY, this.CELL_WIDTH, this.CELL_HEIGHT, this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            5: new TicTacToeCell(rootX, rootY, (this.CELL_WIDTH * 2), this.CELL_HEIGHT, this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            6: new TicTacToeCell(rootX, rootY, 0, (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            7: new TicTacToeCell(rootX, rootY, this.CELL_WIDTH, (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT, context),
+            8: new TicTacToeCell(rootX, rootY, (this.CELL_WIDTH * 2), (this.CELL_HEIGHT * 2), this.CELL_WIDTH, this.CELL_HEIGHT, context)
         }
     }
 
@@ -57,38 +58,41 @@ export class DrawTicTacToe {
 
     drawX(cell: number) {
 
-        let tttCell: TicTacToeCell = this.cells[cell];
-        let absoluteX = tttCell.absoluteX();
-        let absoluteY = tttCell.absoluteY();
-        let absoluteEndX = tttCell.absoluteEndX();
-        let absoluteEndY = tttCell.absoluteEndY();
-
-        this.context.beginPath();
-
-        this.context.moveTo(absoluteX + this.CELL_OFFSET, absoluteY + this.CELL_OFFSET);
-        this.context.lineTo(absoluteEndX - this.CELL_OFFSET, absoluteEndY - this.CELL_OFFSET);
-        this.context.stroke();
-
-        this.context.moveTo(absoluteX + this.CELL_OFFSET, absoluteEndY - this.CELL_OFFSET);
-        this.context.lineTo(absoluteEndX - this.CELL_OFFSET, absoluteY + this.CELL_OFFSET);
-        this.context.stroke();
+        this.cells[cell].drawX();
 
     }
 
     drawO(cell: number) {
 
-        let tttCell: TicTacToeCell = this.cells[cell];
-        let absoluteX = tttCell.absoluteX();
-        let absoluteY = tttCell.absoluteY();
-        let offset = 5;
-        let cellWidth = tttCell.cellWidth();
-        let cellHeight = tttCell.cellHeight();
-        let radius = ((cellWidth) - (offset * 2)) / 2;
-        let cellCenterX = absoluteX + cellWidth / 2;
-        let cellCenterY = absoluteY + cellHeight / 2;
+        this.cells[cell].drawO();
+    }
 
-        this.context.beginPath();
-        this.context.arc(cellCenterX, cellCenterY, radius, this.PI_2, false);
-        this.context.stroke();
+    drawWinningLine(player: PlayerTicTacToe, winningCells: any) {
+
+        let ctx = this.context;
+        let self = this;
+        if (self.boardTicTacToe.isAcross(winningCells)) {
+            winningCells.forEach(function (cell) {
+                self.cells[cell].drawAcross(player);
+            });
+        } else {
+            if (self.boardTicTacToe.isDown(winningCells)) {
+                winningCells.forEach(function (cell) {
+                    self.cells[cell].drawDown(player);
+                })
+            } else {
+                if (self.boardTicTacToe.isDiagonal(winningCells)) {
+                    winningCells.forEach(function (cell) {
+                        if (winningCells[0] === 0) {
+                            self.cells[cell].drawDiagonalDown(player);
+                        } else {
+                            self.cells[cell].drawDiagonalUp(player);
+                        }
+                    })
+                } else {
+                    // console.log('drawWinningLine: draw')
+                }
+            }
+        }
     }
 }
