@@ -3,12 +3,14 @@ import {BrowserModule} from '@angular/platform-browser';
 
 import {AppComponent}  from './app.component';
 import {TicTacToe} from './ttt/ttt.component';
+import {WorldComponent} from './creatures/world.component';
 
 
 @NgModule({
     imports: [BrowserModule],
     declarations: [AppComponent,
-        TicTacToe
+        TicTacToe,
+        WorldComponent
     ],
     bootstrap: [AppComponent]
 })

@@ -1,10 +1,11 @@
-import { Injectable } from '@angular/core';
+import {Injectable} from '@angular/core';
 import {BoardTicTacToe} from '../boardTicTacToe';
 
 @Injectable()
 export class PlayerTicTacToe {
     boardTicTacToe: BoardTicTacToe;
     isX: boolean;
+    type: string = 'Unknown';
 
     constructor() {
 
@@ -12,6 +13,7 @@ export class PlayerTicTacToe {
 
     takeTurn() {
         let i = this.getNextCell();
+        console.log('Player(' + this.type + ')' + (this.isX ? 'X' : 'O') + ' moved to ' + i);
         if (this.boardTicTacToe.board.length > i) {
             this.boardTicTacToe.place(this, i);
         } else {
@@ -34,14 +36,8 @@ export class PlayerTicTacToe {
     // }
 
     // Randomly choose a cell.
-    private getNextCell() {
-        let j = 0;
-        let cell_number = Math.floor(Math.random() * 9);
-        while (!this.boardTicTacToe.isCellEmpty(cell_number) && j < 100) {
-            cell_number = Math.floor(Math.random() * 9);
-            j++;
-        }
-        return cell_number;
+    protected getNextCell() {
+        return 0;
     }
 
     // private getNextCell() {

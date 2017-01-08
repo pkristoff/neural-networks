@@ -5,7 +5,9 @@ declare let module: any;
 declare let Phaser: any;
 
 import {PlayTicTacToe} from './playTicTacToe';
-import {PlayerTicTacToe} from './player/playerTicTacToe';
+import {NeuralNetworkPlayer} from './player/NeuralNetworkPlayer';
+import {RandomPlayer} from './player/randomPlayer';
+// import {NextAvailablePlayer} from './player/getNextAvailablePlayer';
 
 @Component({
     moduleId: module.id,
@@ -36,7 +38,7 @@ export class TicTacToe {
 
     create() {
 
-        this.playTicTacToe = new PlayTicTacToe(new PlayerTicTacToe(), new PlayerTicTacToe());
+        this.playTicTacToe = new PlayTicTacToe(new NeuralNetworkPlayer(), new RandomPlayer());
         this.playTicTacToe.play();
     }
 }

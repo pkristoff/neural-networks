@@ -48,24 +48,27 @@ export class BoardTicTacToe {
         return this.board[cell] === null;
     }
 
-    place(player: PlayerTicTacToe, cell: number) {
+    place(currentPlayer: PlayerTicTacToe, cell: number) {
         if (this.isCellEmpty(cell)) {
-            this.board[cell] = player;
-            if (player.isX) {
+            this.board[cell] = currentPlayer;
+            if (currentPlayer.isX) {
                 this.draw.drawX(cell);
             } else {
                 this.draw.drawO(cell);
             }
         } else {
-            throw new Error('Illegal Move: player=' + (player.isX ? 'X' : 'O') + ' cell=' + cell);
+            throw new Error('Illegal Move: player=' + (currentPlayer.isX ? 'X' : 'O') + ' cell=' + cell);
         }
-        if (this.isGameOver(player)) {
-            let winningCells = this.findWinningCells(player);
-            this.draw.writeGameOverMessage(winningCells === null ? null : player);
+        this.makeNextMove(currentPlayer);
+    }
 
-            this.draw.drawWinningLine(player, winningCells);
+    protected makeNextMove(currentPlayer: PlayerTicTacToe) {
+        if (this.isGameOver(currentPlayer)) {
+            let winningCells = this.findWinningCells(currentPlayer);
+            this.draw.writeGameOverMessage(winningCells === null ? null : currentPlayer);
+            this.draw.drawWinningLine(currentPlayer, winningCells);
         } else {
-            if (player === this.player1) {
+            if (currentPlayer === this.player1) {
                 this.player2.takeTurn();
             } else {
                 this.player1.takeTurn();

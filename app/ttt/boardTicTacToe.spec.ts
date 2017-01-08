@@ -7,6 +7,10 @@ class MockBoardTicTacToe extends BoardTicTacToe {
     getDrawTicTacToe() {
         return new MockDrawTicTacToe();
     }
+
+    makeNextMove(player: PlayerTicTacToe) {
+    // disadble for now
+    }
 }
 
 class MockDrawTicTacToe extends DrawTicTacToe {
