@@ -29,6 +29,21 @@ export class DrawTicTacToe {
         };
     }
 
+    writeGameOverMessage(player: PlayerTicTacToe) {
+
+        // Game over message
+        let message = '';
+        let ctx = this.context;
+        if (player === null) {
+            message = 'Game over draw';
+        } else {
+            message = 'Game over player ' + (player.isX ? 'X' : 'O') + ' won.';
+        }
+        ctx.font = '20px Arial';
+        ctx.fillText(message, 10, 50);
+
+    }
+
 
     drawBoard() {
 

@@ -18,6 +18,6 @@ export class PlayTicTacToe {
     }
 
     playAgain() {
-        this.board.board.resetBoard();
+        this.board.resetBoard();
     }
 }

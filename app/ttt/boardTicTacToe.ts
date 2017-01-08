@@ -3,15 +3,15 @@ import {DrawTicTacToe} from './rendering/drawTicTacToe';
 
 export class BoardTicTacToe {
 
-    WINNING_ACROSS_CELLS: any = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
-    WINNING_DOWN_CELLS: any = [[0, 3, 6], [1, 4, 7], [2, 5, 8]];
-    WINNING_DIAGONAL_CELLS: any = [[0, 4, 8], [2, 4, 6]];
-    WINNING_CELLS: any = this.WINNING_ACROSS_CELLS.concat(this.WINNING_DOWN_CELLS).concat(this.WINNING_DIAGONAL_CELLS);
+    WINNING_ACROSS_CELLS: Array<Array<number>> = [[0, 1, 2], [3, 4, 5], [6, 7, 8]];
+    WINNING_DOWN_CELLS: Array<Array<number>> = [[0, 3, 6], [1, 4, 7], [2, 5, 8]];
+    WINNING_DIAGONAL_CELLS: Array<Array<number>> = [[0, 4, 8], [2, 4, 6]];
+    WINNING_CELLS: Array<Array<number>> = this.WINNING_ACROSS_CELLS.concat(this.WINNING_DOWN_CELLS).concat(this.WINNING_DIAGONAL_CELLS);
 
     player1: PlayerTicTacToe;
     player2: PlayerTicTacToe;
     draw: DrawTicTacToe;
-    board: any;
+    board: Array<PlayerTicTacToe>;
 
     constructor(player1: PlayerTicTacToe, player2: PlayerTicTacToe) {
         this.player1 = player1;
@@ -21,14 +21,18 @@ export class BoardTicTacToe {
         player1.isX = true;
         player2.boardTicTacToe = this;
         player2.isX = false;
-        this.draw = new DrawTicTacToe(this.getCanvasContext(), 10, 80);
+        this.draw = this.getDrawTicTacToe();
         this.draw.boardTicTacToe = this;
 
         this.board = new Array<PlayerTicTacToe>(9);
         this.resetBoard();
     }
 
-    private getCanvasContext() {
+    protected getDrawTicTacToe() {
+        return new DrawTicTacToe(this.getCanvasContext(), 10, 80);
+    }
+
+    protected getCanvasContext() {
         let canvas = <HTMLCanvasElement> document.getElementById('ttt-canvas');
         return canvas.getContext('2d');
     }
@@ -57,17 +61,7 @@ export class BoardTicTacToe {
         }
         if (this.isGameOver(player)) {
             let winningCells = this.findWinningCells(player);
-
-            // Game over message
-            let message = '';
-            let ctx = this.getCanvasContext();
-            if (winningCells === null) {
-                message = 'Game over draw';
-            } else {
-                message = 'Game over player ' + (player.isX ? 'X' : 'O') + ' won.';
-            }
-            ctx.font = '20px Arial';
-            ctx.fillText(message, 10, 50);
+            this.draw.writeGameOverMessage(winningCells === null ? null : player);
 
             this.draw.drawWinningLine(player, winningCells);
         } else {
@@ -91,11 +85,11 @@ export class BoardTicTacToe {
         return this.board.length <= i;
     }
 
-    private didPlayerWin(player) {
+    didPlayerWin(player) {
         return this.findWinningCells(player) != null;
     }
 
-    private findWinningCells(player) {
+    protected findWinningCells(player) {
         let i = 0;
         while (this.WINNING_CELLS.length > i && !this.containsPlayer(player, this.WINNING_CELLS[i])) {
             i++;
@@ -103,7 +97,7 @@ export class BoardTicTacToe {
         return this.WINNING_CELLS.length <= i ? null : this.WINNING_CELLS[i];
     }
 
-    private containsPlayer(player: PlayerTicTacToe, winningcell: any) {
+    private containsPlayer(player: PlayerTicTacToe, winningcell: Array<number>) {
         for (let i = 0, len = winningcell.length; i < len; i++) {
             if (this.board[winningcell[i]] !== player) {
                 return false;
@@ -112,24 +106,24 @@ export class BoardTicTacToe {
         return true;
     }
 
-    isAcross(winningCells: any) {
+    isAcross(winningCells: Array<number>) {
         return this.doCellsMatch(this.WINNING_ACROSS_CELLS, winningCells);
     }
 
-    private doCellsMatch(winningCells: any, gameWinningCells: any) {
+    private doCellsMatch(winningCells: Array<Array<number>>, gameWinningCells: Array<number>) {
         if (gameWinningCells === null) {
             return false;
         }
-        return winningCells.find(function (arr) {
+        return winningCells.some(function (arr) {
             return arr.join(',') === gameWinningCells.join(',');
         });
     }
 
-    isDown(winningCells: any) {
+    isDown(winningCells: Array<number>) {
         return this.doCellsMatch(this.WINNING_DOWN_CELLS, winningCells);
     }
 
-    isDiagonal(winningCells: any) {
+    isDiagonal(winningCells: Array<number>) {
         return this.doCellsMatch(this.WINNING_DIAGONAL_CELLS, winningCells);
     }
 
