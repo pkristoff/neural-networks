@@ -12,10 +12,12 @@ export class BoardTicTacToe {
     player2: PlayerTicTacToe;
     draw: DrawTicTacToe;
     board: Array<PlayerTicTacToe>;
+    displayBoard: boolean;
 
-    constructor(player1: PlayerTicTacToe, player2: PlayerTicTacToe) {
+    constructor(player1: PlayerTicTacToe, player2: PlayerTicTacToe, displayBoard: boolean) {
         this.player1 = player1;
         this.player2 = player2;
+        this.displayBoard = displayBoard;
 
         player1.boardTicTacToe = this;
         player1.isX = true;
@@ -29,7 +31,7 @@ export class BoardTicTacToe {
     }
 
     protected getDrawTicTacToe() {
-        return new DrawTicTacToe(this.getCanvasContext(), 10, 80);
+        return new DrawTicTacToe(this.getCanvasContext(), 10, 80, this.displayBoard);
     }
 
     protected getCanvasContext() {
@@ -57,9 +59,10 @@ export class BoardTicTacToe {
                 this.draw.drawO(cell);
             }
         } else {
-            throw new Error('Illegal Move: player=' + (currentPlayer.isX ? 'X' : 'O') + ' cell=' + cell);
+            // this.printBoard();
+            throw new Error('Illegal Move: player=' + (currentPlayer.to_s()) + ' cell=' + cell);
         }
-        this.makeNextMove(currentPlayer);
+        return this.makeNextMove(currentPlayer);
     }
 
     protected makeNextMove(currentPlayer: PlayerTicTacToe) {
@@ -67,11 +70,12 @@ export class BoardTicTacToe {
             let winningCells = this.findWinningCells(currentPlayer);
             this.draw.writeGameOverMessage(winningCells === null ? null : currentPlayer);
             this.draw.drawWinningLine(currentPlayer, winningCells);
+            return winningCells === null ? 'draw' : (currentPlayer.isX ? 'X' : 'O');
         } else {
             if (currentPlayer === this.player1) {
-                this.player2.takeTurn();
+                return this.player2.takeTurn();
             } else {
-                this.player1.takeTurn();
+                return this.player1.takeTurn();
             }
         }
     }
@@ -130,7 +134,7 @@ export class BoardTicTacToe {
         return this.doCellsMatch(this.WINNING_DIAGONAL_CELLS, winningCells);
     }
 
-    // private printBoard() {
+    // printBoard() {
     //     let cell0 = this.board[0];
     //     let cell1 = this.board[1];
     //     let cell2 = this.board[2];

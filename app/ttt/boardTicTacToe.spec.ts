@@ -1,6 +1,7 @@
 import {BoardTicTacToe} from './boardTicTacToe';
 import {PlayerTicTacToe} from './player/playerTicTacToe';
 import {DrawTicTacToe} from './rendering/drawTicTacToe';
+import {RandomPlayer} from './player/randomPlayer';
 
 class MockBoardTicTacToe extends BoardTicTacToe {
 
@@ -21,7 +22,7 @@ class MockDrawTicTacToe extends DrawTicTacToe {
     drawWinningLineWasCalled: boolean = false;
 
     constructor() {
-        super(null, 10, 80);
+        super(null, 10, 80, false);
         this.drawBoardWasCalled = false;
         this.drawXWasCalled = false;
         this.drawOWasCalled = false;
@@ -57,9 +58,9 @@ describe('BoardTicTacToe', function () {
     let numOfBoardCells = 9;
 
     beforeEach(() => {
-        player1 = new PlayerTicTacToe();
-        player2 = new PlayerTicTacToe();
-        boardTicTacToe = new MockBoardTicTacToe(player1, player2);
+        player1 = new RandomPlayer();
+        player2 = new RandomPlayer();
+        boardTicTacToe = new MockBoardTicTacToe(player1, player2, false);
     });
 
     describe('Basic setup', function () {
@@ -231,7 +232,7 @@ describe('BoardTicTacToe', function () {
 
                 expect(function () {
                     boardTicTacToe.place(player1, 0);
-                }).toThrow(new Error('Illegal Move: player=X cell=0'));
+                }).toThrow(new Error('Illegal Move: player=RandomX cell=0'));
 
             });
         });

@@ -1,6 +1,46 @@
 <div>
     <div>Tic Tac Toe</div>
     <div>
+        <div id="multirun">
+            <table>
+                <thead>
+                <tr>
+                    <th></th>
+                    <th>Random Vs. Random</th>
+                    <th>Neural Network Vs. Random</th>
+                    <th>Random Vs. Neural Network</th>
+                    <th>Neural Network Vs. Neural Network</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>X Wins</td>
+                    <td>{{rrMultirunInfo.xWins}}</td>
+                    <td>{{nrMultirunInfo.xWins}}</td>
+                    <td>{{rnMultirunInfo.xWins}}</td>
+                    <td>{{nnMultirunInfo.xWins}}</td>
+                </tr>
+                <tr>
+                    <td>O Wins</td>
+                    <td>{{rrMultirunInfo.oWins}}</td>
+                    <td>{{nrMultirunInfo.oWins}}</td>
+                    <td>{{rnMultirunInfo.oWins}}</td>
+                    <td>{{nnMultirunInfo.oWins}}</td>
+                </tr>
+                <tr>
+                    <td>Draw Wins</td>
+                    <td>{{rrMultirunInfo.drawWins}}</td>
+                    <td>{{nrMultirunInfo.drawWins}}</td>
+                    <td>{{rnMultirunInfo.drawWins}}</td>
+                    <td>{{nnMultirunInfo.drawWins}}</td>
+                </tr>
+                </tbody>
+            </table>
+            <div id="RandomRandom"></div>
+            <div id="NNRandom"></div>
+            <div id="RandomNN"></div>
+            <div id="NNNN"></div>
+        </div>
         <div id="ttt-canvas-container">
             <canvas id="ttt-canvas"></canvas>
         </div>
