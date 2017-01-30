@@ -8,17 +8,17 @@ let Trainer = synaptic.Trainer;
 @Injectable()
 export class NeuralNetworkPlayer extends PlayerTicTacToe {
 
-    CENTER_CELL = 4;
-    EDGE_CELLS = [1, 3, 5, 7];
-    CORNER_CELLS = [0, 2, 6, 8];
-    DIAG_CELLS_RIGHT = [0, 4, 8];
-    DIAG_CELLS_LEFT = [2, 4, 6];
-    ACROSS_TOP = [0, 1, 2];
-    ACROSS_MIDDLE = [3, 4, 5];
-    ACROSS_BOTTTOM = [6, 7, 8];
-    DOWN_LEFT = [0, 3, 6];
-    DOWN_CENTER = [1, 4, 7];
-    DOWN_RIGHT = [2, 5, 8];
+    static CENTER_CELL = 4;
+    static EDGE_CELLS = [1, 3, 5, 7];
+    static CORNER_CELLS = [0, 2, 6, 8];
+    static DIAG_CELLS_RIGHT = [0, 4, 8];
+    static DIAG_CELLS_LEFT = [2, 4, 6];
+    static ACROSS_TOP = [0, 1, 2];
+    static ACROSS_MIDDLE = [3, 4, 5];
+    static ACROSS_BOTTTOM = [6, 7, 8];
+    static DOWN_LEFT = [0, 3, 6];
+    static DOWN_CENTER = [1, 4, 7];
+    static DOWN_RIGHT = [2, 5, 8];
 
     type: string = 'NeuralNetwork';
     network: any;
@@ -28,7 +28,7 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
         return cell + 9;
     }
 
-    static analyzeSequence(input, output, seq) {
+    static setOutputForSequence(input, output, seq) {
         let found = false;
         if (input[seq[0]] === 1 && input[seq[1]] === 1 && input[seq[2]] === 0) {
             output.fill(0);
@@ -64,6 +64,56 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
             }
         }
         return cell_number;
+    }
+
+    static setOutputForDiagonal(input, output) {
+        let found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.DIAG_CELLS_RIGHT);
+        if (!found) {
+            found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.DIAG_CELLS_LEFT);
+        }
+        return found;
+    }
+
+    static setOutputForAcross(input, output) {
+        let found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.ACROSS_TOP);
+        if (!found) {
+            found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.ACROSS_MIDDLE);
+            if (!found) {
+                found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.ACROSS_BOTTTOM);
+            }
+        }
+        return found;
+    }
+
+    static setOutputForDown(input, output) {
+        let found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.DOWN_LEFT);
+        if (!found) {
+            found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.DOWN_CENTER);
+            if (!found) {
+                found = NeuralNetworkPlayer.setOutputForSequence(input, output, NeuralNetworkPlayer.DOWN_RIGHT);
+            }
+        }
+        return found;
+    }
+
+    static analyze(input, output) {
+        let found = NeuralNetworkPlayer.setOutputForAcross(input, output);
+        if (!found) {
+            found = NeuralNetworkPlayer.setOutputForDown(input, output);
+        }
+        if (!found) {
+            found = NeuralNetworkPlayer.setOutputForDiagonal(input, output);
+        }
+        return found;
+    }
+
+    static getAvailableCorners(inputCorner) {
+        let availableCorners = NeuralNetworkPlayer.CORNER_CELLS.slice();
+        let indexOfInput = availableCorners.indexOf(inputCorner);
+        if (indexOfInput !== -1) {
+            availableCorners.splice(indexOfInput, 1);
+        }
+        return availableCorners;
     }
 
     constructor() {
@@ -118,7 +168,7 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
                                                     output[index] = 1;
                                                 }
                                             }
-                                            this.analyze(inputX, output);
+                                            NeuralNetworkPlayer.analyze(inputX, output);
                                             count += 2;
                                             trainer.train(trainingSets);
                                             inputX.fill(0);
@@ -133,50 +183,33 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
                 }
             }
         }
-        this.analyzeInitialMove(inputX, output, trainingSets, trainer);
+        this.setOutputForInitialMove(inputX, output, trainingSets, trainer);
         count += 2;
         console.log('number of training sets: ' + count);
     }
 
-    analyze(input, output) {
-        let found = this.analzeAcross(input, output);
-        if (!found) {
-            found = this.analzeDown(input, output);
-        }
-        if (!found) {
-            found = this.analzeDiagonal(input, output);
-        }
-        return found;
-    }
-
-    public analyzeInitialMove(input: any, output: any, trainingSets, trainer) {
+    public setOutputForInitialMove(input: any, output: any, trainingSets, trainer) {
         if (input.find(function (num) {
                 return num === 1;
             }) !== 1) {
             output.fill(0);
-            this.CORNER_CELLS.forEach(function (cell) {
+            NeuralNetworkPlayer.CORNER_CELLS.forEach(function (cell) {
                 output[cell] = 1;
             });
             trainer.train(trainingSets);
         }
     }
 
-    protected getAvailableCorners(inputCorner) {
-        let availableCorners = this.CORNER_CELLS.slice();
-        availableCorners.splice(availableCorners.indexOf(inputCorner), 1);
-        return availableCorners;
-    }
-
-    public analzeFirstMove(input: any, output: any, trainingSets, trainer) {
-        let self = this;
+    public setOutputForFirstMove(input: any, output: any, trainingSets, trainer) {
+        // let self = this;
         // me = corner
         // opponent = edge
         // select=center
-        self.CORNER_CELLS.forEach(function (cell_num) {
-            [1, 3, 5, 7].forEach(function (edge_num) {
+        NeuralNetworkPlayer.CORNER_CELLS.forEach(function (cell_num) {
+            NeuralNetworkPlayer.EDGE_CELLS.forEach(function (edge_num) {
                 input[cell_num] = 1;
                 input[NeuralNetworkPlayer.getOpponentCell(edge_num)] = 1;
-                output[self.CENTER_CELL] = 1;
+                output[NeuralNetworkPlayer.CENTER_CELL] = 1;
                 trainer.train(trainingSets);
                 input.fill(0);
                 output.fill(0);
@@ -186,11 +219,11 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
         // opponent = corner
         // select free corner
         // console.log('me = corner oponent = corner select free corner');
-        self.CORNER_CELLS.forEach(function (me_corner) {
-            self.getAvailableCorners(me_corner).forEach(function (opponent_corner) {
+        NeuralNetworkPlayer.CORNER_CELLS.forEach(function (me_corner) {
+            NeuralNetworkPlayer.getAvailableCorners(me_corner).forEach(function (opponent_corner) {
                 input[me_corner] = 1;
                 input[NeuralNetworkPlayer.getOpponentCell(opponent_corner)] = 1;
-                let open_corner = self.CORNER_CELLS.find(function (corner) {
+                let open_corner = NeuralNetworkPlayer.CORNER_CELLS.find(function (corner) {
                     return (corner !== me_corner) && (corner !== opponent_corner);
                 });
                 output[open_corner] = 1;
@@ -204,12 +237,12 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
         // me = corner
         // opponent = corner
         // select center
-        self.CORNER_CELLS.forEach(function (me_corner) {
-            self.getAvailableCorners(me_corner).forEach(function (opponent_corner) {
+        NeuralNetworkPlayer.CORNER_CELLS.forEach(function (me_corner) {
+            NeuralNetworkPlayer.getAvailableCorners(me_corner).forEach(function (opponent_corner) {
                 input[me_corner] = 1;
                 input[NeuralNetworkPlayer.getOpponentCell(opponent_corner)] = 1;
 
-                output[self.CENTER_CELL] = 1;
+                output[NeuralNetworkPlayer.CENTER_CELL] = 1;
                 trainer.train(trainingSets);
                 input.fill(0);
                 output.fill(0);
@@ -218,11 +251,11 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
         // me = center
         // opponent = edge
         // select = corner
-        [self.CENTER_CELL].forEach(function (cell_num) {
-            self.EDGE_CELLS.forEach(function (edge_cell) {
+        [NeuralNetworkPlayer.CENTER_CELL].forEach(function (cell_num) {
+            NeuralNetworkPlayer.EDGE_CELLS.forEach(function (edge_cell) {
                 input[cell_num] = 1;
                 input[NeuralNetworkPlayer.getOpponentCell(edge_cell)] = 1;
-                self.CORNER_CELLS.forEach(function (cell) {
+                NeuralNetworkPlayer.CORNER_CELLS.forEach(function (cell) {
                     output[cell] = 1;
                 });
                 trainer.train(trainingSets);
@@ -230,36 +263,6 @@ export class NeuralNetworkPlayer extends PlayerTicTacToe {
                 output.fill(0);
             });
         });
-    }
-
-    protected analzeDiagonal(input, output) {
-        let found = NeuralNetworkPlayer.analyzeSequence(input, output, this.DIAG_CELLS_RIGHT);
-        if (!found) {
-            found = NeuralNetworkPlayer.analyzeSequence(input, output, this.DIAG_CELLS_LEFT);
-        }
-        return found;
-    }
-
-    protected analzeAcross(input, output) {
-        let found = NeuralNetworkPlayer.analyzeSequence(input, output, this.ACROSS_TOP);
-        if (!found) {
-            found = NeuralNetworkPlayer.analyzeSequence(input, output, this.ACROSS_MIDDLE);
-            if (!found) {
-                found = NeuralNetworkPlayer.analyzeSequence(input, output, this.ACROSS_BOTTTOM);
-            }
-        }
-        return found;
-    }
-
-    protected analzeDown(input, output) {
-        let found = NeuralNetworkPlayer.analyzeSequence(input, output, this.DOWN_LEFT);
-        if (!found) {
-            found = NeuralNetworkPlayer.analyzeSequence(input, output, this.DOWN_CENTER);
-            if (!found) {
-                found = NeuralNetworkPlayer.analyzeSequence(input, output, this.DOWN_RIGHT);
-            }
-        }
-        return found;
     }
 
     // TODO: replace with neuralNetwork code.

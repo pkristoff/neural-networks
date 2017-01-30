@@ -20,12 +20,22 @@ describe('Trainig', function () {
         expect(nnPlayer.network).toBeDefined();
     });
 
-    describe('analyzeInitialMove', function () {
+    describe('analyze', function () {
         let input: Array<number>;
         let output: Array<number>;
         let trainingSets: Array<any>;
         let trainer: Trainer;
         let answers: any;
+        let seqs = [
+            NeuralNetworkPlayer.ACROSS_TOP,
+            NeuralNetworkPlayer.ACROSS_MIDDLE,
+            NeuralNetworkPlayer.ACROSS_TOP,
+            NeuralNetworkPlayer.DIAG_CELLS_LEFT,
+            NeuralNetworkPlayer.DIAG_CELLS_RIGHT,
+            NeuralNetworkPlayer.DOWN_LEFT,
+            NeuralNetworkPlayer.DOWN_CENTER,
+            NeuralNetworkPlayer.DOWN_RIGHT
+        ];
 
         beforeEach(() => {
             input = new Array<number>(18);
@@ -85,7 +95,7 @@ describe('Trainig', function () {
             };
             it('should NOT change output first move', () => {
 
-                nnPlayer.analzeFirstMove(input, output, trainingSets, trainer);
+                nnPlayer.setOutputForFirstMove(input, output, trainingSets, trainer);
 
                 // answers.forEach(function (trainingSet) {
                 //     console.log(trainingSet);
@@ -183,11 +193,56 @@ describe('Trainig', function () {
             }
         };
 
+        describe('setOutputForSequence', function () {
+
+            let expectSequence = function (seq) {
+
+                input[seq[0]] = 1;
+                input[seq[1]] = 1;
+                expect(NeuralNetworkPlayer.setOutputForSequence(input, output, seq)).toBe((true));
+                expect(output[seq[2]]).toBe(1);
+                input.fill(0);
+                output.fill(0);
+                input[seq[0]] = 1;
+                input[seq[2]] = 1;
+                expect(NeuralNetworkPlayer.setOutputForSequence(input, output, seq)).toBe((true));
+                expect(output[seq[1]]).toBe(1);
+                input.fill(0);
+                output.fill(0);
+                input[seq[1]] = 1;
+                input[seq[2]] = 1;
+                expect(NeuralNetworkPlayer.setOutputForSequence(input, output, seq)).toBe((true));
+                expect(output[seq[0]]).toBe(1);
+            };
+
+            it('should not find', () => {
+                seqs.forEach(function (seq) {
+                    expect(NeuralNetworkPlayer.setOutputForSequence(input, output, seq)).toBe((false));
+                });
+            });
+
+            it('should find across top', () => {
+                seqs.forEach(function (seq) {
+                    expectSequence(seq);
+                })
+                ;
+            });
+
+            it('should find across middle', () => {
+                expectSequence(NeuralNetworkPlayer.ACROSS_MIDDLE);
+            });
+
+            it('should find across bottom', () => {
+                expectSequence(NeuralNetworkPlayer.ACROSS_BOTTTOM);
+            });
+
+        });
+
         describe('analyzeInitialMove', function () {
 
             it('should set corner cells in output', () => {
 
-                nnPlayer.analyzeInitialMove(input, output, trainingSets, trainer);
+                nnPlayer.setOutputForInitialMove(input, output, trainingSets, trainer);
 
                 expectOutput([0, 2, 6, 8]);
             });
@@ -196,7 +251,7 @@ describe('Trainig', function () {
 
                 input[4] = 1;
 
-                nnPlayer.analyzeInitialMove(input, output, trainingSets, trainer);
+                nnPlayer.setOutputForInitialMove(input, output, trainingSets, trainer);
 
                 expect(output[0]).toBe(0);
                 expect(output[2]).toBe(0);
@@ -204,6 +259,18 @@ describe('Trainig', function () {
                 expect(output[8]).toBe(0);
             });
 
+        });
+
+        describe('getAvailableCorners', function () {
+            it('should return a list of the remaining corner cells', function () {
+                expect(NeuralNetworkPlayer.getAvailableCorners(0)).toEqual([2, 6, 8]);
+                expect(NeuralNetworkPlayer.getAvailableCorners(2)).toEqual([0, 6, 8]);
+                expect(NeuralNetworkPlayer.getAvailableCorners(6)).toEqual([0, 2, 8]);
+                expect(NeuralNetworkPlayer.getAvailableCorners(8)).toEqual([0, 2, 6]);
+            });
+            it('should return a list of all corner cells', function () {
+                expect(NeuralNetworkPlayer.getAvailableCorners(1)).toEqual([0, 2, 6, 8]);
+            });
         });
     });
 });
