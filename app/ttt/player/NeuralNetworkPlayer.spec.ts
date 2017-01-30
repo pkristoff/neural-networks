@@ -244,7 +244,7 @@ describe('Trainig', function () {
 
                 nnPlayer.setOutputForInitialMove(input, output, trainingSets, trainer);
 
-                expectOutput([0, 2, 6, 8]);
+                expectOutput(NeuralNetworkPlayer.CORNER_CELLS);
             });
 
             it('should NOT set corner cells in output if a move has been made', () => {
